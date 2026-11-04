@@ -11,20 +11,27 @@ def crear_hash(clave):
         raise ValueError("Máximo 72 bytes UTF-8 para bcrypt.")
     return bcrypt.hashpw(clave_bytes, bcrypt.gensalt()).decode("utf-8")
 
-def registrar_usuario(empleado_id, nombre, clave):
-    nombre = Usuario.normalizar_usuario(nombre)
-    if UsuarioDAO.buscar_por_nombre(nombre) is not None:
-        raise ValueError("No se pudo crear esa cuenta.")
-    
-    hash_guardado = crear_hash(clave)
-    usuario = Usuario(nombre, hash_guardado, empleado_id)
-    return UsuarioDAO.insertar(usuario)
-
 def autenticar(nombre, clave):
     nombre = Usuario.normalizar_usuario(nombre)
     if not isinstance(clave, str):
         return None
     
+    return {
+        "id": cuenta.id,
+        "empleado_id": cuenta.empleado_id,
+        "nombre_usuario": cuenta.nombre_usuario,
+        "rol": cuenta.rol,
+    }
+
+def registrar_usuario(empleado_id, nombre, clave, rol="empleado"):
+    nombre = Usuario.normalizar_usuario(nombre)
+    if UsuarioDAO.buscar_por_nombre(nombre) is not None:
+        raise ValueError("No se pudo crear esa cuenta.")
+    
+    hash_guardado = crear_hash(clave)
+    usuario = Usuario(nombre=nombre, contraseña=hash_guardado, empleado_id=empleado_id, rol=rol)
+    return UsuarioDAO.insertar(usuario)
+
     datos = clave.encode("utf-8")
     if not (0 < len(datos) <= MAX_BYTES_BCRYPT):
         return None

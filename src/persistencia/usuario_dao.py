@@ -18,6 +18,36 @@ class UsuarioDAO(BaseDAO):
         )
 
     @classmethod
+    def buscar_por_nombre(cls, nombre):
+def buscar_por_nombre(cls, nombre):
+        conexion = abrir_conexion()
+        try:
+            with conexion.cursor() as cursor:
+                sql = "SELECT id, nombre, contraseña, id_empleado, rol FROM usuario WHERE nombre = %s"
+                cursor.execute(sql, (nombre,))
+                row = cursor.fetchone()
+                if row:                    
+                    if isinstance(row, dict):
+                        return Usuario(
+                            id=row['id'],
+                            nombre=row['nombre'],
+                            contraseña=row['contraseña'],
+                            empleado_id=row['id_empleado'],
+                            rol=row['rol']
+                        )
+                    else:
+                        return Usuario(
+                            id=row[0],
+                            nombre=row[1],
+                            contraseña=row[2],
+                            empleado_id=row[3],
+                            rol=row[4]
+                        )
+                return None
+        finally:
+            conexion.close()
+
+    @classmethod
     def insertar(cls, usuario):
         sql = "INSERT INTO usuario (id_empleado, nombre, contraseña, rol) VALUES (?, ?, ?, ?)"
         parametros = (usuario.id_empleado, usuario.nombre, usuario.contraseña, usuario.rol)
@@ -33,9 +63,4 @@ class UsuarioDAO(BaseDAO):
         parametros = (usuario.id_empleado, usuario.nombre, usuario.contraseña, usuario.rol, usuario.id)
         return cls._ejecutar(sql, parametros, "actualizar el usuario") > 0
 
-    @classmethod
-    def buscar_por_nombre(cls, nombre):
-        usuarios = cls._listar_donde("nombre = ?", (nombre,), "buscar el usuario")
-        if not usuarios:
-            return None
-        return usuarios[0]
+

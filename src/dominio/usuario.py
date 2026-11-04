@@ -3,6 +3,8 @@ class Usuario:
     MAX_USUARIO = 40
     MIN_CLAVE = 6
 
+    ROLES = ("admin", "empleado")
+
     def __init__(self, nombre_usuario, password_hash, empleado_id, id=None):
         if type(empleado_id) is not int or empleado_id <= 0:
             raise ValueError("El ID del empleado debe ser positivo.")
@@ -10,6 +12,12 @@ class Usuario:
         self.empleado_id = empleado_id
         self.nombre_usuario = self.normalizar_usuario(nombre_usuario)
         self.password_hash = password_hash
+    
+    @classmethod
+    def validar_rol(cls, rol):
+        if not isinstance(rol, str) or rol not in cls.ROLES:
+            raise ValueError("Rol no permitido.")
+        return rol
 
     @classmethod
     def normalizar_usuario(cls, nombre):
