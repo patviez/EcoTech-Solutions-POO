@@ -1,150 +1,259 @@
-# EcoTech Solutions – Sistema de Gestión de Empleados
+# EcoTech Solutions - Sistema de Gestion de Empleados y Proyectos
 
-Aplicación de consola en Python para gestionar los empleados, departamentos, proyectos, registros de horas y usuarios de EcoTech Solutions. Está hecha con programación orientada a objetos y guarda los datos en una base de datos SQLite o MySQL.
 
-Proyecto grupal de la asignatura **Programación Orientada a Objeto Seguro (TI3021)**.
 
-## Requisitos
+Aplicacion de consola en Python para gestionar empleados, departamentos, proyectos, registros de horas, usuarios e indicadores economicos (API del Dolar con respaldo local) en EcoTech Solutions. Desarrollada bajo el paradigma de Programacion Orientada a Objetos (POO) y arquitectura en capas con persistencia en MySQL / SQLite.
+
+
+
+Proyecto grupal de la asignatura Programacion Orientada a Objeto Seguro (TI3021).
+
+
+
+================================================================================
+
+
+
+1. REQUISITOS DEL SISTEMA
+
+
 
 - Python 3.10 o superior
-- Para usar MySQL: un servidor MySQL con una base de datos creada (las tablas las crea el programa)
 
-## Instalación
+- Servidor MySQL o base de datos SQLite local
 
-```bash
-git clone https://github.com/aless-dini/EcoTech-POOS-Grupal.git
-cd EcoTech-POOS-Grupal
-python -m venv .venv
-source .venv/Scripts/activate      # Git Bash en Windows
-# .venv\Scripts\activate           # CMD o PowerShell
-pip install -r requirements.txt
-```
+- Librerias especificadas en requirements.txt (pymysql, bcrypt, requests, python-dotenv)
 
-## Configuración
 
-La conexión se configura en el archivo `.env` de la raíz del proyecto:
 
-| Variable | Descripción | Ejemplo |
-|---|---|---|
-| `DB_ENGINE` | Motor de base de datos: `sqlite` o `mysql` | `sqlite` |
-| `DB_NAME` | En SQLite, el archivo; en MySQL, el nombre de la base | `ecotech.db` |
-| `DB_HOST` | Servidor MySQL | `localhost` |
-| `DB_PORT` | Puerto MySQL | `3308` |
-| `DB_USER` | Usuario MySQL | `root` |
-| `DB_PASSWORD` | Contraseña MySQL | |
+================================================================================
 
-Si no hay `.env`, el programa usa SQLite con el archivo `ecotech.db`.
 
-> Las credenciales van solo en el `.env` y nunca en el código.
 
-## Ejecución
+2. INSTALACION Y CONFIGURACION
 
-Desde la raíz del proyecto:
 
-```bash
-python src/main.py
-```
 
-Al iniciar, el programa crea las tablas que falten. Si no logra conectarse a la base de datos, muestra un mensaje y se cierra sin errores.
+Clonar el repositorio y preparar el entorno virtual:
 
-**Si se cambia la estructura de las tablas**, hay que borrar la base y dejar que el programa la vuelva a crear (en SQLite, borrar `ecotech.db`), porque `CREATE TABLE IF NOT EXISTS` no modifica tablas que ya existen.
 
-## Funcionalidades
 
-| Menú | Opciones |
-|---|---|
-| Empleados | Registrar, actualizar, eliminar, listar, listar por departamento, buscar por id y por nombre |
-| Departamentos | Crear, editar (nombre y gerente), eliminar, agregar y quitar empleados, listar empleados, ver cantidad |
-| Proyectos | Crear, editar, eliminar, listar, buscar por id, asignar y quitar empleados, listar empleados |
-| Registros de tiempo | Registrar horas, editar, eliminar, listar (todos, por empleado, por proyecto) con totales, exportar informe a `.txt` |
-| Usuarios | Registrar, iniciar sesión, cambiar contraseña, editar rol y empleado asociado, eliminar, listar |
+   git clone https://github.com/aless-dini/EcoTech-Solutions-POO.git
 
-## Estructura del proyecto
+   cd EcoTech-Solutions-POO
 
-```
+   python -m venv .venv
+
+   source .venv/Scripts/activate      # Git Bash en Windows
+
+   # .venv\Scripts\activate            # CMD o PowerShell
+
+   pip install -r requirements.txt
+
+
+
+La conexion a la base de datos se gestiona mediante el archivo .env en la raiz del proyecto:
+
+
+
+   DB_ENGINE   : Motor de base de datos (sqlite o mysql)
+
+   DB_NAME     : Nombre de la base de datos o archivo local
+
+   DB_HOST     : Host del servidor MySQL (ej. localhost)
+
+   DB_PORT     : Puerto de conexion MySQL (ej. 3306 o 3308)
+
+   DB_USER     : Usuario de MySQL (ej. root)
+
+   DB_PASSWORD : Password de MySQL
+
+
+
+* Nota: Las credenciales sensibles se mantienen protegidas en el archivo .env y nunca se exponen en el codigo fuente.
+
+
+
+================================================================================
+
+
+
+3. EJECUCION DEL SISTEMA
+
+
+
+1) Creacion e inicializacion de tablas y cuenta administrador (Semilla):
+
+   python src/semilla_bd.py
+
+
+
+2) Ejecucion principal del programa:
+
+   python src/main.py
+
+
+
+Credenciales por Defecto (Administrador):
+
+- Usuario: admin
+
+- Clave  : Admin123!
+
+
+
+================================================================================
+
+
+
+4. FUNCIONALIDADES PRINCIPALES
+
+
+
+- Cuenta / Perfil: Consultar ficha personal, consultar registros de tiempo (formato HH:MM hrs) y actualizar datos.
+
+- Indicadores Economicos: Consultar valor actual del Dolar desde servicio API REST externa con fallback a BD local e historial.
+
+- Empleados: Registrar, actualizar, eliminar, listar, listar por departamento, buscar por ID y buscar por nombre.
+
+- Departamentos: Crear, editar (nombre y gerente), eliminar, agregar/quitar empleados, listar empleados y ver cantidad.
+
+- Proyectos: Crear, editar, eliminar, listar con contadores, buscar por ID, asignar/quitar empleados y listar equipo.
+
+- Registros de Tiempo: Registrar horas, editar, eliminar, listar (todos, por empleado, por proyecto) y exportar informe a .txt.
+
+- Usuarios del Sistema: Registrar usuarios, gestionar roles (admin / empleado), cambiar claves y asociar a ficha de empleado.
+
+
+
+================================================================================
+
+
+
+5. ESTRUCTURA DEL PROYECTO
+
+
+
 src/
-├── main.py              Punto de entrada: prepara la base y abre el menú principal
-├── dominio/             Clases del modelo UML
-│   ├── empleado.py
+
+├── main.py                    Punto de entrada: inicializa la aplicacion y los menus
+
+├── main_prueba.py             Script de verificacion para el modulo de consumo de la API
+
+├── semilla_bd.py              Script de poblado inicial (usuario admin y tablas base)
+
+├── entradas.py                Validaciones globales de entrada de datos por consola
+
+├── dominio/                   Clases del modelo de dominio (UML)
+
 │   ├── departamento.py
+
+│   ├── empleado.py
+
+│   ├── indicador.py
+
 │   ├── proyecto.py
+
 │   ├── registroTiempo.py
-│   ├── usuario.py
-│   └── controlAcceso.py Cifrado y validación de contraseñas
-├── persistencia/        Acceso a la base de datos
-│   ├── conexion.py      Conexión a SQLite o MySQL según el .env
-│   ├── crear_bd.py      Creación de las tablas
-│   ├── base_dao.py      Clase base con la lógica común de todos los DAO
-│   └── *_dao.py         Un DAO por clase del dominio
-└── menus/               Interacción con el usuario y validación de entradas
+
+│   └── usuario.py
+
+├── persistencia/              Capa de acceso a datos (Patron DAO)
+
+│   ├── base_dao.py            Clase base generica para operacion CRUD
+
+│   ├── conexion.py            Conexion dinamica a MySQL/SQLite mediante .env
+
+│   ├── crear_bd.py            Script DDL para creacion de tablas e indices
+
+│   ├── departamento_dao.py
+
+│   ├── empleado_dao.py
+
+│   ├── indicador_dao.py       Persistencia e historial de indicadores economicos
+
+│   ├── proyecto_dao.py
+
+│   ├── registroTiempo_dao.py
+
+│   └── usuario_dao.py
+
+├── servicios/                 Logica de negocio y servicios externos
+
+│   ├── api_dolar.py           Consumo de la API externa del dolar
+
+│   ├── autenticacion.py       Gestion de login y hashing seguro con bcrypt
+
+│   ├── deserializador_indicador.py Deserializacion de JSON a objetos de dominio
+
+│   ├── gestion_empleados.py
+
+│   ├── indicadores.py         Servicio de indicadores con estrategia de respaldo (fallback)
+
+│   ├── mi_cuenta.py           Servicio de gestion para perfil autenticado
+
+│   └── permisos.py            Control de acceso y verificacion de roles
+
+└── menus/                     Capa de presentacion e interfaz de usuario de consola
+
+    ├── menuDepartamento.py
+
+    ├── menuEmpleado.py
+
+    ├── menuIndicador.py
+
     ├── menuPrincipal.py
-    └── menu*.py         Un menú por entidad
+
+    ├── menuProyecto.py
+
+    ├── menuRegistroTiempo.py
+
+    └── menuUsuario.py
+
 docs/
-└── uml_grupal.png       Diagrama de clases
-```
 
-El programa está separado en tres capas: los **menús** piden y validan los datos, el **dominio** representa las entidades y la **persistencia** las guarda en la base de datos.
-
-## Seguridad y manejo de errores
-
-- **Consultas parametrizadas**: los datos del usuario nunca se insertan en el texto SQL, lo que evita la inyección SQL.
-- **Contraseñas cifradas** con PBKDF2-SHA256, una sal aleatoria y 100.000 iteraciones. La comparación usa `hmac.compare_digest`.
-- **Contraseña oculta** al escribirla en la terminal (`getpass`).
-- **Validación de entradas**: cada dato se vuelve a pedir hasta que sea válido (números, correo, teléfono, fechas reales, horas entre 0 y 24).
-- **Errores de base de datos** capturados en `BaseDAO`: el programa informa el error y sigue funcionando.
-- **Integridad de los datos**: no se puede eliminar un empleado o proyecto con horas registradas, ni un departamento con empleados.
-
-## Base de datos
-
-Tablas: `departamento`, `empleado`, `proyecto`, `empleado_proyecto` (relación muchos a muchos entre empleados y proyectos), `registroTiempo` y `usuario`.
-
-## Para trabajar en el proyecto
-
-1. `git pull` antes de empezar.
-2. Activar el entorno virtual (`source .venv/Scripts/activate`).
-3. Si se instala una librería nueva, actualizar `requirements.txt` con `pip freeze > requirements.txt`.
-
-#quisiera adaptarlo para obtener la tasa del peso chileno (CLP)# (main_prueba.py)
-
-import math
-import requests
+└── uml_grupal.png             Diagrama de clases del sistema
 
 
-def obtener_datos():
-    respuesta = requests.get(
-        "https://open.er-api.com/v6/latest/USD",
-        timeout=(3, 5),
-    )
-    respuesta.raise_for_status()
-    return respuesta.json()
+
+================================================================================
 
 
-def extraer_clp(datos):
-    if not isinstance(datos, dict):
-        raise ValueError("Respuesta inesperada.")
 
-    rates = datos.get("rates")
-    if not isinstance(rates, dict) or "CLP" not in rates:
-        raise ValueError("No se encontró el valor del CLP.")
-
-    valor = rates["CLP"]
-
-    if (
-        type(valor) not in (int, float)
-        or not math.isfinite(valor)
-        or valor <= 0
-    ):
-        raise ValueError("Valor del indicador inválido.")
-
-    # Fecha de la última actualización provista por la API
-    fecha = datos.get("time_last_update_utc", "Fecha no disponible")
-
-    return fecha, valor
+6. SEGURIDAD Y MANEJO DE ERRORES
 
 
-# Ejecución
-datos = obtener_datos()
-fecha, valor = extraer_clp(datos)
 
-print(f"Fecha: {fecha}")
-print(f"1 USD = {valor} CLP")
+- Prevencion de Inyeccion SQL: Todas las consultas en la capa DAO utilizan sentencias preparadas y consultas parametrizadas.
+
+- Cifrado de Contraseñas: Uso de la libreria bcrypt para hashing seguro con sal aleatoria de contraseñas.
+
+- Manejo de Errores en Espanol: Control estricto de excepciones (pymysql.err.OperationalError, IntegrityError y ValueError) evitando la exposicion de trazas en ingles o del motor de BD al usuario final.
+
+- Estrategia Fallback (API Dolar): Ante caidas de red o fallas del servicio web externo, el sistema conmuta automaticamente a la lectura del ultimo registro en la base de datos local.
+
+- Validacion Estricta de Entradas: Sanitizacion de entradas mediante Expresiones Regulares, limites salariales, rangos de fechas reales y confirmaciones explicitas (s/n).
+
+
+
+================================================================================
+
+
+
+7. DECLARACION DE USO DE HERRAMIENTAS DE IA (ASISTENCIA Y DEPURACION)
+
+
+
+En el desarrollo del sistema EcoTech Solutions, la Inteligencia Artificial fue utilizada exclusivamente como una herramienta de apoyo tecnico para la resolucion de casos de borde, refactorizacion de consultas y validacion de errores de consola. La arquitectura en capas, el diseño de clases UML y la estructura de datos fueron concebidos integralmente por el equipo.
+
+
+
+Puntos clave de asistencia tecnica:
+
+1. Optimizacion de Expresiones Regulares: Apoyo en el diseño del patron Regex para la sanitizacion y validacion de correos electronicos corporativos.
+
+2. Refactorizacion de Mapeos DAO: Asistencia en la resolucion de descalces de indices en tuplas devueltas por MySQL para instanciar objetos mediante parametros nominales (IndicadorDAO).
+
+3. Estrategia Fallback en Servicios: Apoyo en el patron de contingencia para la API del dolar, garantizando la continuidad operativa del sistema ante la falta de conexion a Internet.
+
+4. Formateo de Consola: Asistencia en la logica de formateo de tiempo a cadenas estandarizadas (HH:MM hrs) y limpieza de caracteres no ASCII en salidas de consola.

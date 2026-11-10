@@ -5,14 +5,37 @@ from persistencia.proyecto_dao import ProyectoDAO
 from menus.menuEmpleado import pedir_entero, pedir_fecha
 
 def gestionar_registros():
-    print("\n1. Registrar horas")
-    print("2. Editar registro")
-    print("3. Eliminar registro")
-    print("4. Listar registros")
-    print("5. Listar registros de un empleado")
-    print("6. Listar registros de un proyecto")
-    print("7. Exportar informe de un empleado")
-    print("8. Volver")
+    while True:
+        print("\n--- CONTROL DE REGISTRO DE TIEMPO ---")
+        print("1. Registrar horas")
+        print("2. Editar registro")
+        print("3. Eliminar registro")
+        print("4. Listar registros")
+        print("5. Listar registros de un empleado")
+        print("6. Listar registros de un proyecto")
+        print("7. Exportar informe de un empleado")
+        print("8. Volver")
+
+        opcion = input("\nSeleccione una opcion: ").strip()
+
+        if opcion == "1":
+            registrar_horas()
+        elif opcion == "2":
+            editar_registro()
+        elif opcion == "3":
+            eliminar_registro()
+        elif opcion == "4":
+            listar_registros()
+        elif opcion == "5":
+            listar_registros_empleado()
+        elif opcion == "6":
+            listar_registros_proyecto()
+        elif opcion == "7":
+            exportar_informe_empleado()
+        elif opcion == "8":
+            break
+        else:
+            print("\nOpcion no valida.")
 
 def pedir_horas(mensaje):
     while True:
@@ -20,10 +43,10 @@ def pedir_horas(mensaje):
         try:
             horas = float(valor)
         except ValueError:
-            print("Debe ingresar un número (por ejemplo 8 o 7,5), intente de nuevo.")
+            print("Debe ingresar un numero (por ejemplo 8 o 7,5), intente de nuevo.")
             continue
         if not 0 < horas <= 24:
-            print("Las horas deben ser mayores que 0 y como máximo 24, intente de nuevo.")
+            print("Las horas deben ser mayores que 0 y como maximo 24, intente de nuevo.")
             continue
         return horas
 
@@ -57,7 +80,7 @@ def registrar_horas():
         print("\nNo existe un proyecto con ese id")
         return
     if not any(e.id == empleado.id for e in EmpleadoDAO.listar_por_proyecto(proyecto.id)):
-        print("\nEl empleado no está asignado a ese proyecto, primero asígnelo en el menú de proyectos")
+        print("\nEl empleado no esta asignado a ese proyecto, primero asignelo en el menu de proyectos")
         return
 
     fecha = pedir_fecha("Fecha (DD-MM-AAAA): ")

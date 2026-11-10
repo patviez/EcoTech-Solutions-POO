@@ -7,3 +7,6 @@ requests==2.34.2
 sqlparse==0.5.3
 tzdata==2025.2
 urllib3==2.8.0
+bcrypt
+pymysql
+python-dotenv

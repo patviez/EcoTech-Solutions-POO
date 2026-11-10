@@ -6,14 +6,37 @@ from menus.menuEmpleado import (
 )
 
 def gestionar_departamentos():
-    print("\n1. Crear departamento")
-    print("2. Eliminar departamento")
-    print("3. Agregar empleado")
-    print("4. Eliminar empleado")
-    print("5. Listar empleados")
-    print("6. Ver cantidad empleados")
-    print("7. Editar departamento")
-    print("8. Volver")
+    while True:
+        print("\n--- GESTION DE DEPARTAMENTOS ---")
+        print("1. Crear departamento")
+        print("2. Eliminar departamento")
+        print("3. Agregar empleado")
+        print("4. Eliminar empleado")
+        print("5. Listar empleados")
+        print("6. Ver cantidad empleados")
+        print("7. Editar departamento")
+        print("8. Volver")
+
+        opcion = input("\nSeleccione una opcion: ").strip()
+
+        if opcion == "1":
+            crear_departamento()
+        elif opcion == "2":
+            eliminar_departamento()
+        elif opcion == "3":
+            agregar_empleado_departamento()
+        elif opcion == "4":
+            quitar_empleado_departamento()
+        elif opcion == "5":
+            listar_empleados_departamento()
+        elif opcion == "6":
+            ver_cantidad_empleados()
+        elif opcion == "7":
+            editar_departamento()
+        elif opcion == "8":
+            break
+        else:
+            print("\nOpcion no valida.")
 
 def pedir_departamento_existente(mensaje):
     idDepartamento = pedir_entero(mensaje)
@@ -29,7 +52,7 @@ def pedir_gerente(mensaje):
             return None
         id_gerente = a_entero_positivo(valor)
         if id_gerente is None:
-            print("El id del gerente debe ser un número entero positivo, intente de nuevo.")
+            print("El id del gerente debe ser un numero entero positivo, intente de nuevo.")
             continue
         if EmpleadoDAO.buscar_por_id(id_gerente) is None:
             print("No existe un empleado con ese id, intente de nuevo.")
@@ -52,7 +75,7 @@ def eliminar_departamento():
         return
 
     if EmpleadoDAO.listar_por_departamento(departamento.id):
-        print("\nNo se puede eliminar un departamento que tiene empleados, primero quítelos del departamento")
+        print("\nNo se puede eliminar un departamento que tiene empleados, primero quitelos del departamento")
         return
 
     if DepartamentoDAO.eliminar(departamento.id):
@@ -99,7 +122,7 @@ def quitar_empleado_departamento():
         if departamento.id_gerente == empleado.id:
             departamento.id_gerente = None
             DepartamentoDAO.actualizar(departamento)
-            print("El departamento quedó sin gerente")
+            print("El departamento quedo sin gerente")
     else:
         print("\nNo fue posible quitar el empleado del departamento")
 
@@ -146,7 +169,7 @@ def editar_departamento():
             break
         id_gerente = a_entero_positivo(valor)
         if id_gerente is None:
-            print("El id del gerente debe ser un número entero positivo, intente de nuevo.")
+            print("El id del gerente debe ser un numero entero positivo, intente de nuevo.")
             continue
         empleado = EmpleadoDAO.buscar_por_id(id_gerente)
         if empleado is None:

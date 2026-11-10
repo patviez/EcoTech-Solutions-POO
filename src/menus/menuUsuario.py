@@ -72,3 +72,6 @@ def menu_privado(usuario_actual):
             mostrar_perfil(usuario_actual)
         else:
             print("Opción no válida.")
+
+def gestionar_usuarios(usuario_actual=None):
+    return menu_privado(usuario_actual)

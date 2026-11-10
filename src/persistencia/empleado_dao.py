@@ -1,3 +1,4 @@
+import pymysql
 from dominio.empleado import Empleado
 from persistencia.base_dao import BaseDAO
 from persistencia.conexion import abrir_conexion
@@ -23,36 +24,46 @@ class EmpleadoDAO(BaseDAO):
     @classmethod
     def insertar(cls, empleado):
         conexion = abrir_conexion()
-    try:
-        with conexion.cursor() as cursor:
-            sql = """
-                INSERT INTO empleado (nombre, correo, direccion, telefono, salario, inicioContrato)
-                VALUES (%s, %s, %s, %s, %s, %s)
-            """
-            cursor.execute(sql, (
-            empleado.nombre,
-            empleado.direccion,
-            empleado.telefono,
-            empleado.correo,
-            empleado.salario,
-            empleado.inicioContrato,
-            empleado.id_departamento,
-        ))
-        conexion.commit()            
-            return cursor.lastrowid
-    except Exception as e:
-        print(f"Error al insertar el empleado: {e}")
-        return None
-    finally:
-        conexion.close()
+        try:
+            with conexion.cursor() as cursor:
+                sql = """
+                    INSERT INTO empleado (nombre, direccion, telefono, correo, salario, inicioContrato, id_departamento)
+                    VALUES (%s, %s, %s, %s, %s, %s, %s)
+                """
+                cursor.execute(sql, (
+                    empleado.nombre,
+                    empleado.direccion,
+                    empleado.telefono,
+                    empleado.correo,
+                    empleado.salario,
+                    empleado.inicioContrato,
+                    empleado.id_departamento
+                ))
+                conexion.commit()
+                empleado.id = cursor.lastrowid
+                return empleado.id
+        except pymysql.err.OperationalError as e:
+            if e.args[0] == 1264:
+                print("\nError: El valor del salario esta fuera del rango permitido.")
+            else:
+                print("\nError operativo en la base de datos al registrar el empleado.")
+            return None
+        except pymysql.err.IntegrityError as e:
+            print("\nError de integridad al registrar el empleado.")
+            return None
+        except Exception as e:
+            print("\nOcurrio un error no esperado al registrar el empleado.")
+            return None
+        finally:
+            conexion.close()
 
     @classmethod
     def actualizar(cls, empleado):
         sql = (
             "UPDATE empleado "
-            "SET nombre = ?, direccion = ?, telefono = ?, correo = ?, salario = ?, "
-            "inicioContrato = ?, id_departamento = ? "
-            "WHERE id = ?"
+            "SET nombre = %s, direccion = %s, telefono = %s, correo = %s, salario = %s, "
+            "inicioContrato = %s, id_departamento = %s "
+            "WHERE id = %s"
         )
         parametros = (
             empleado.nombre,
@@ -77,19 +88,31 @@ class EmpleadoDAO(BaseDAO):
     @classmethod
     def buscar_por_correo(cls, correo):
         conexion = abrir_conexion()
-        with conexion.cursor() as cursor:
-             sql = "SELECT * FROM empleados WHERE correo = %s"
-             cursor.execute(sql, (correo,))
-             return cursor.fetchone()
+        try:
+            with conexion.cursor() as cursor:
+                sql = "SELECT id, nombre, direccion, telefono, correo, salario, inicioContrato, id_departamento FROM empleado WHERE correo = %s"
+                cursor.execute(sql, (correo,))
+                row = cursor.fetchone()
+                if row:
+                    if isinstance(row, dict):
+                        return cls._convertir((
+                            row['id'], row['nombre'], row['direccion'], row['telefono'],
+                            row['correo'], row['salario'], row['inicioContrato'], row['id_departamento']
+                        ))
+                    else:
+                        return cls._convertir(row)
+                return None
+        finally:
+            conexion.close()
 
     @classmethod
     def listar_por_departamento(cls, id_departamento):
-        return cls._listar_donde("id_departamento = ?", (id_departamento,),
+        return cls._listar_donde("id_departamento = %s", (id_departamento,),
                                  "listar los empleados del departamento", orden="nombre")
 
     @classmethod
     def asignar_departamento(cls, id_empleado, id_departamento):
-        sql = "UPDATE empleado SET id_departamento = ? WHERE id = ?"
+        sql = "UPDATE empleado SET id_departamento = %s WHERE id = %s"
         return cls._ejecutar(sql, (id_departamento, id_empleado),
                              "asignar el departamento al empleado") > 0
 
@@ -99,7 +122,7 @@ class EmpleadoDAO(BaseDAO):
         sql = (
             f"SELECT {columnas} FROM empleado e "
             "JOIN empleado_proyecto ep ON ep.id_empleado = e.id "
-            "WHERE ep.id_proyecto = ? ORDER BY e.nombre"
+            "WHERE ep.id_proyecto = %s ORDER BY e.nombre"
         )
         filas = cls._consultar(sql, (id_proyecto,), "listar los empleados del proyecto")
         return [cls._convertir(fila) for fila in filas]

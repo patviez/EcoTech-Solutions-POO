@@ -1,4 +1,4 @@
-from persistencia.conexion import (abrir_conexion,obtener_motor )
+from persistencia.conexion import abrir_conexion, obtener_motor
 
 def crear_tablas():
     conexion = abrir_conexion()
@@ -9,7 +9,7 @@ def crear_tablas():
                 id INTEGER PRIMARY KEY AUTOINCREMENT,
                 nombre TEXT NOT NULL,
                 id_gerente INTEGER,
-                FOREIGN KEY (id_gerente) REFERENCES empleados(id)
+                FOREIGN KEY (id_gerente) REFERENCES empleado(id)
             )""",
             """CREATE TABLE IF NOT EXISTS empleado (
                 id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -48,10 +48,20 @@ def crear_tablas():
                 id INTEGER PRIMARY KEY AUTOINCREMENT,
                 id_empleado INTEGER,
                 nombre TEXT NOT NULL,
-                contraseña TEXT NOT NULL,
+                clave TEXT NOT NULL,
                 rol TEXT NOT NULL,
                 FOREIGN KEY (id_empleado) REFERENCES empleado(id)
             )""",
+            """CREATE TABLE IF NOT EXISTS indicador_api (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                fuente TEXT NOT NULL,
+                codigo TEXT NOT NULL,
+                fecha TEXT NOT NULL,
+                valor REAL NOT NULL,
+                unidad TEXT NOT NULL,
+                verificado_en TEXT DEFAULT CURRENT_TIMESTAMP,
+                UNIQUE(fuente, codigo, fecha)
+            )"""
         ]
     else:
         sentencias = [
@@ -97,10 +107,20 @@ def crear_tablas():
                 id INT PRIMARY KEY AUTO_INCREMENT,
                 id_empleado INT,
                 nombre VARCHAR(100) NOT NULL,
-                contraseña VARCHAR(100) NOT NULL,
-                rol VARCHAR (100) NOT NULL,
+                clave VARCHAR(100) NOT NULL,
+                rol VARCHAR(100) NOT NULL,
                 FOREIGN KEY (id_empleado) REFERENCES empleado(id)
             ) ENGINE=InnoDB""",
+            """CREATE TABLE IF NOT EXISTS indicador_api (
+                id INT AUTO_INCREMENT PRIMARY KEY,
+                fuente VARCHAR(50) NOT NULL,
+                codigo VARCHAR(20) NOT NULL,
+                fecha VARCHAR(20) NOT NULL,
+                valor DECIMAL(10, 2) NOT NULL,
+                unidad VARCHAR(20) NOT NULL,
+                verificado_en DATETIME DEFAULT CURRENT_TIMESTAMP,
+                UNIQUE KEY uq_fuente_codigo_fecha (fuente, codigo, fecha)
+            ) ENGINE=InnoDB"""
         ]
 
     if obtener_motor() != "sqlite":
@@ -121,7 +141,7 @@ def crear_tablas():
                 ADD CONSTRAINT fk_gerente
                 FOREIGN KEY (id_gerente) REFERENCES empleado(id)"""
             )
-       
+        
         cursor.execute("SET FOREIGN_KEY_CHECKS = 1;")
 
     conexion.commit()
