@@ -38,7 +38,7 @@ Clonar el repositorio y preparar el entorno virtual:
 
 
 
-   git clone https://github.com/aless-dini/EcoTech-Solutions-POO.git
+   git clone https://github.com/patviez/EcoTech-Solutions-POO.git
 
    cd EcoTech-Solutions-POO
 
